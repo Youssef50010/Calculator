@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang = "ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculator</title>
+<style>
+    body {
+        height: 100%;
+        width: 100%;
+        background: #333;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    input {
+        width: 90%;
+        height: 4%;
+        font-size: 80%;
+        text-align: right;
+        margin-bottom: 10px;
+        background: #a3b18a;
+        border: none;
+        padding: 10px;
+    }
+    .math {
+        margin-top: 10%;
+        background: #222;
+        padding: 40px;
+        border-radius: 50px;
+        width: 100vw;
+        height: auto;
+    }
+    button {
+        margin-top: 25px;        width: 15%;
+        height: 10dvh;
+        margin: 5px;
+        border: 1px solid white;
+        border-radius: 50px;
+    }
+    .number {
+        background: #333;
+        color: white;
+    }
+    .num {
+        background: #707a7a;
+        color: white;
+    }
+    .oper {
+        background: #ff9500;
+        color: white;
+    }
+    .clear {
+        background: rgb(255, 50, 0);
+        color: white;
+    }
+    .on {
+        background: green;
+        color: white;
+    }
+    .lock {
+        background: rgb(255, 0, 0);
+        color: white;
+    }
+</style>
+</head>
+<body>
+<div class = "math">
+    <input type = "text" id = "input" readOnly>
+    <div>
+        <button class = "clear" onclick = "clear2()">AC</button>
+        <button class = "clear" onclick = "del2()">Del</button>
+        <button class = "on" onclick = "lock_open()" id = "btn">on</button>
+        <button class = "oper" onclick = "add('√')">√</button>
+        <button class = "oper" onclick = "add('^')">^</button>
+    </div>
+    <div>
+        <button class = "num" onclick = "add('(')">(</button>
+        <button class = "num" onclick = "add(')')">)</button>
+        <button class = "num" onclick = "add('|')">|</button>
+        <button class = "num" onclick = "add('∛')">∛</button>
+        <button class = "oper" onclick = "add('÷')">÷</button>
+    </div>
+    <div>
+        <button class = "number" onclick = "add('7')">7</button>
+        <button class = "number" onclick = "add('8')">8</button>
+        <button class = "number" onclick = "add('9')">9</button>
+        <button class = "num" onclick = "add('%')">%</button>
+        <button class = "oper" onclick = "add('×')">×</button>
+    </div>
+    <div>
+        <button class = "number" onclick = "add('4')">4</button>
+        <button class = "number" onclick = "add('5')">5</button>
+        <button class = "number" onclick = "add('6')">6</button>
+        <button class = "num" onclick = "add('e')">e</button>
+        <button class = "oper" onclick = "add('-')">-</button>
+    </div>
+    <div>
+        <button class = "number" onclick = "add('1')">1</button>
+        <button class = "number" onclick = "add('2')">2</button>
+        <button class = "number" onclick = "add('3')">3</button>
+        <button class = "num" onclick = "add('π')">π</button>
+        <button class = "oper" onclick = "add('+')">+</button>
+    </div>
+    <div>
+        <button class = "number"  style = "width: 35%;" onclick = "add('0')">0</button>
+        <button class = "number" onclick = "add('.')">.</button>
+        <button class = "num" onclick = "add('Ans')">Ans</button>
+        <button class = "oper" onclick = "calc()">=</button>
+    </div>
+</div>
+<script>
+    let talk = 0;
+    let Resultant = 0;
+    let game = true;
+    let Ans = 0;
+    function getid (t) {
+        return document.getElementById(t);
+    }
+    function add (w) {
+        if (game == true) {
+            return
+        }
+        if (getid("input").value == 0 || getid("input").value == "Error") {
+            getid("input").value = w
+        }
+        else {
+            getid("input").value += w
+        }
+        talk = getid("input").value;
+    }
+    function calc () {
+        if (game == true) {
+            return
+        }
+        try {
+            ques = getid("input").value;
+            ques = ques.replace(/×/g, "*");
+            ques = ques.replace(/÷/g, "/");
+            ques = ques.replace(/π/g, "Math.PI");
+            ques = ques.replace(/√(\d+)/g, "Math.sqrt($1)");
+            ques = ques.replace(/\^/g, "**");
+            ques = ques.replace(/Ans/g, Resultant);
+            ques = ques.replace(/Error/g, 0);
+            ques = ques.replace(/%/g, "/100");
+            ques = ques.replace(/\|([^|]+)\|/g, "Math.abs($1)");
+            ques = ques.replace(/∛(\d+|\([^)]*\))/g, "Math.cbrt($1)");
+            ques = ques.replace(/e/g, "Math.E");
+            Resultant = eval(ques);
+        }
+        catch {
+            Resultant = "Error";
+        }
+        getid("input").value = Resultant;
+    }
+    function clear2 () {
+        if (game == true) {
+            return
+        }
+        talk = 0;
+        getid("input").value = talk;
+    }
+    function del2 () {
+        if (game == true) {
+            return
+        }
+        let current = getid("input").value;
+        if(current == "Error" || current == "Ans" || current.length === 1) {
+            getid("input").value = "0";
+        }
+        else {
+            getid("input").value = current.slice(0, -1);
+        }
+    }
+    function lock_open () {
+        if (game == false) {
+            game = true;
+            getid("btn").innerText = "on";
+            getid("btn").classList.add("on");
+            getid("btn").classList.remove("lock");
+            Ans = getid("input").value;
+            getid("input").value = "";
+        }
+        else if (game == true) {
+            game = false
+            getid("btn").innerText = "off";
+            getid("btn").classList.add("lock");
+            getid("btn").classList.remove("on");
+            getid("input").value = Ans;
+            Ans = "";
+        }
+    }
+</script>
+</body>
+</html>
